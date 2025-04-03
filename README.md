@@ -34,8 +34,8 @@ Want support for a new Roblox game? We’re always looking to improve! Join our 
 This project is licensed under the **MIT License**. You are free to use, modify, and distribute the script. Please remember to credit the original creator when using or sharing the code.
 
 ## Credits
-- **Developed by:** [SolyNot]
-- **Discord:** [Your Discord Server Link](https://discord.gg/8pJCFW8cpG)
+- **Developed by:** SolyNot
+- **Discord:** [Our Discord](https://discord.gg/8pJCFW8cpG)
 
 ## Support
 If you encounter any issues or have questions, please join our Discord server for support. We’re here to help you get the most out of SolyNot Hub.
