@@ -22,8 +22,13 @@ Follow these simple steps to set up SolyNot Hub:
 
 1. **Copy the Script:** Copy the provided script from the code section below.
 2. **Launch Roblox:** Open Roblox and start the game where you want to use SolyNot Hub.
-3. **Open Your Executor:** Launch your preferred executor (e.g., Synapse X, ScriptWare, KRNL).
+3. **Open Your Executor:** Launch your preferred executor (e.g., AWP, Wave, Solara, Xeno).
 4. **Paste and Execute:** Paste the script into the executor and run it.
+
+> **Script:**
+> ```lua
+> loadstring(game:HttpGet("https://raw.githubusercontent.com/BaconBABA/SolyNotHub/refs/heads/main/loader.lua"))()
+> ```
 
 > **Tip:** Ensure your executor is compatible with the script to avoid issues.
 
