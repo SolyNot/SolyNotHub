@@ -35,7 +35,7 @@ This project is licensed under the **MIT License**. You are free to use, modify,
 
 ## Credits
 - **Developed by:** [SolyNot]
-- **Discord:** [[Your Discord Server Link](https://discord.gg/8pJCFW8cpG)]
+- **Discord:** [Your Discord Server Link](https://discord.gg/8pJCFW8cpG)
 
 ## Support
 If you encounter any issues or have questions, please join our Discord server for support. We’re here to help you get the most out of SolyNot Hub.
