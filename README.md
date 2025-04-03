@@ -28,7 +28,7 @@ Follow these simple steps to set up SolyNot Hub:
 > **Tip:** Ensure your executor is compatible with the script to avoid issues.
 
 ## How to Request a Game
-Want support for a new Roblox game? We’re always looking to improve! Join our [Discord server](#) and submit your game request. Your feedback directly influences our update priorities and helps us serve the community better.
+Want support for a new Roblox game? We’re always looking to improve! Join our [Discord server](https://discord.gg/8pJCFW8cpG) and submit your game request. Your feedback directly influences our update priorities and helps us serve the community better.
 
 ## License
 This project is licensed under the **MIT License**. You are free to use, modify, and distribute the script. Please remember to credit the original creator when using or sharing the code.
