@@ -8,5 +8,5 @@ end)
 if success then
     loadstring(scriptContent)()
 else
-    game.Players.LocalPlayer:Kick("This game is not supported.")
+    loadstring(game:HttpGet(baseUrl .. "universal.lua"
 end
