@@ -138,8 +138,6 @@ local function onHeartbeat()
     if Fluent.Unloaded then
         local conn = table.find(managedConnections, RunService.Heartbeat)
         if conn and managedConnections[conn] then managedConnections[conn]:Disconnect() end
-        
-        print("SolyNot Universal: Unloading and cleaning up resources...")
 
         for i = #managedConnections, 1, -1 do
             local conn = managedConnections[i]
