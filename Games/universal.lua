@@ -2,6 +2,11 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+local localPlayer = game.Players.LocalPlayer
+local highlights = {}
+local connections = {}
+local characterConnections = {}
+
 local Window = Fluent:CreateWindow({
     Title = "SolyNot Universal",
     SubTitle = "by SolyNot",
@@ -30,11 +35,6 @@ Tabs.ESP:AddToggle("TeamCheck", { Title = "Team Check", Default = true, Callback
 Tabs.ESP:AddToggle("ShowTeammates", { Title = "Show Teammates", Default = false, Callback = function(v) settings.showTeammates = v end })
 Tabs.ESP:AddToggle("UseTeamColor", { Title = "Use Team Color", Default = true, Callback = function(v) settings.useTeamColor = v end })
 Tabs.ESP:AddColorpicker("DefaultColor", { Title = "Default ESP Color", Default = settings.defaultColor, Callback = function(v) settings.defaultColor = v end })
-
-local localPlayer = game.Players.LocalPlayer
-local highlights = {}
-local connections = {}
-local characterConnections = {}
 
 local function updateHighlight(player)
     if player == localPlayer then return end
