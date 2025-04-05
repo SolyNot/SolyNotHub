@@ -24,18 +24,12 @@ local settings = {
     useTeamColor = true,
     defaultColor = Color3.new(1, 0, 0)
 }
-
-Tabs.ESP:AddToggle("ESPEnabled", { Title = "Enable ESP", Default = false, Callback = function(v) settings.enabled = v end })
+Window:SelectTab(1)
+zTabs.ESP:AddToggle("ESPEnabled", { Title = "Enable ESP", Default = false, Callback = function(v) settings.enabled = v end })
 Tabs.ESP:AddToggle("TeamCheck", { Title = "Team Check", Default = true, Callback = function(v) settings.teamCheck = v end })
 Tabs.ESP:AddToggle("ShowTeammates", { Title = "Show Teammates", Default = false, Callback = function(v) settings.showTeammates = v end })
 Tabs.ESP:AddToggle("UseTeamColor", { Title = "Use Team Color", Default = true, Callback = function(v) settings.useTeamColor = v end })
 Tabs.ESP:AddColorpicker("DefaultColor", { Title = "Default ESP Color", Default = settings.defaultColor, Callback = function(v) settings.defaultColor = v end })
-
-SaveManager:SetLibrary(Fluent)
-InterfaceManager:SetLibrary(Fluent)
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
-Window:SelectTab(1)
 
 local localPlayer = game.Players.LocalPlayer
 local highlights = {}
@@ -85,7 +79,7 @@ end
 
 task.spawn(function()
     while not Fluent.Unloaded do
-        task.wait(0.1)
+        task.wait()
         for player in pairs(highlights) do
             updateHighlight(player)
         end
@@ -100,3 +94,8 @@ task.spawn(function()
         highlight:Destroy()
     end
 end)
+
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
