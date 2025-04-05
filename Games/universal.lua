@@ -2,10 +2,19 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-local localPlayer = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local localPlayer = Players.LocalPlayer
 local highlights = {}
-local connections = {}
-local characterConnections = {}
+local managedConnections = {}
+
+local settings = {
+    enabled = false,
+    teamCheck = true,
+    showTeammates = false,
+    useTeamColor = true,
+    defaultColor = Color3.fromRGB(255, 0, 0)
+}
 
 local Window = Fluent:CreateWindow({
     Title = "SolyNot Universal",
@@ -22,78 +31,143 @@ local Tabs = {
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
-local settings = {
-    enabled = false,
-    teamCheck = true,
-    showTeammates = false,
-    useTeamColor = true,
-    defaultColor = Color3.new(1, 0, 0)
-}
+Tabs.ESP:AddToggle("ESPEnabled", { Title = "Enable ESP", Default = settings.enabled, Callback = function(value) settings.enabled = value end })
+Tabs.ESP:AddToggle("TeamCheck", { Title = "Team Check (Ignore Same Team)", Default = settings.teamCheck, Callback = function(value) settings.teamCheck = value end })
+Tabs.ESP:AddToggle("ShowTeammates", { Title = "Show Teammates (If Team Check On)", Default = settings.showTeammates, Callback = function(value) settings.showTeammates = value end })
+Tabs.ESP:AddToggle("UseTeamColor", { Title = "Use Team Color", Default = settings.useTeamColor, Callback = function(value) settings.useTeamColor = value end })
+Tabs.ESP:AddColorpicker("DefaultColor", { Title = "Default ESP Color (If Not Team Color)", Default = settings.defaultColor, Callback = function(value) settings.defaultColor = value end })
 Window:SelectTab(1)
-zTabs.ESP:AddToggle("ESPEnabled", { Title = "Enable ESP", Default = false, Callback = function(v) settings.enabled = v end })
-Tabs.ESP:AddToggle("TeamCheck", { Title = "Team Check", Default = true, Callback = function(v) settings.teamCheck = v end })
-Tabs.ESP:AddToggle("ShowTeammates", { Title = "Show Teammates", Default = false, Callback = function(v) settings.showTeammates = v end })
-Tabs.ESP:AddToggle("UseTeamColor", { Title = "Use Team Color", Default = true, Callback = function(v) settings.useTeamColor = v end })
-Tabs.ESP:AddColorpicker("DefaultColor", { Title = "Default ESP Color", Default = settings.defaultColor, Callback = function(v) settings.defaultColor = v end })
+
+local function cleanupHighlight(player)
+    local data = highlights[player]
+    if data then
+        if data.connections then
+            for _, conn in ipairs(data.connections) do
+                conn:Disconnect()
+            end
+        end
+        if data.highlight then
+            data.highlight:Destroy()
+        end
+        highlights[player] = nil
+    end
+end
 
 local function updateHighlight(player)
     if player == localPlayer then return end
     local character = player.Character
-    if not character then return end
-    local highlight = highlights[player] or Instance.new("Highlight", character)
-    highlights[player] = highlight
-    highlight.Enabled = settings.enabled and (not settings.teamCheck or player.Team ~= localPlayer.Team or settings.showTeammates)
-    highlight.OutlineColor = settings.useTeamColor and player.TeamColor.Color or settings.defaultColor
+    local data = highlights[player]
+
+    if not character then
+        if data then
+            cleanupHighlight(player)
+        end
+        return
+    end
+
+    if data and data.character ~= character then
+        cleanupHighlight(player)
+        data = nil
+    end
+
+    if not data then
+        local newHighlight = Instance.new("Highlight", character)
+        local characterRemovingConn = character.AncestryChanged:Connect(function(_, parent)
+            if not parent then
+                cleanupHighlight(player)
+            end
+        end)
+
+        highlights[player] = {
+            highlight = newHighlight,
+            character = character,
+            connections = { characterRemovingConn }
+        }
+        data = highlights[player]
+    end
+
+    local highlight = data.highlight
+    local isOnTeam = player.Team and player.Team == localPlayer.Team
+    local isVisible
+
+    if not settings.enabled then
+        isVisible = false
+    elseif settings.teamCheck then
+        isVisible = not isOnTeam or settings.showTeammates
+    else
+        isVisible = true
+    end
+
+    highlight.Enabled = isVisible
+
+    if isVisible then
+        highlight.OutlineColor = (settings.useTeamColor and player.TeamColor) and player.TeamColor.Color or settings.defaultColor
+        highlight.FillColor = highlight.OutlineColor
+    end
 end
 
-table.insert(connections, game.Players.PlayerAdded:Connect(function(player)
-    characterConnections[player] = player.CharacterAdded:Connect(function()
-        updateHighlight(player)
+local function setupPlayer(player)
+    if player == localPlayer then return end
+    local charAddedConn = player.CharacterAdded:Connect(function(character)
+        task.wait(0.1)
+        if player.Character == character then
+             updateHighlight(player)
+        end
     end)
+    table.insert(managedConnections, charAddedConn)
     if player.Character then
         updateHighlight(player)
+    else
+        cleanupHighlight(player)
     end
-end))
+end
 
-table.insert(connections, game.Players.PlayerRemoving:Connect(function(player)
-    if characterConnections[player] then
-        characterConnections[player]:Disconnect()
-        characterConnections[player] = nil
-    end
-    if highlights[player] then
-        highlights[player]:Destroy()
-        highlights[player] = nil
-    end
-end))
+local function cleanupPlayer(player)
+    if player == localPlayer then return end
+    cleanupHighlight(player)
+end
 
-for _, player in pairs(game.Players:GetPlayers()) do
-    if player ~= localPlayer then
-        characterConnections[player] = player.CharacterAdded:Connect(function()
-            updateHighlight(player)
-        end)
-        if player.Character then
-            updateHighlight(player)
+table.insert(managedConnections, Players.PlayerAdded:Connect(setupPlayer))
+table.insert(managedConnections, Players.PlayerRemoving:Connect(cleanupPlayer))
+
+for _, player in ipairs(Players:GetPlayers()) do
+    pcall(setupPlayer, player)
+end
+
+local function onHeartbeat()
+    if Fluent.Unloaded then
+        local conn = table.find(managedConnections, RunService.Heartbeat)
+        if conn and managedConnections[conn] then managedConnections[conn]:Disconnect() end
+        
+        print("SolyNot Universal: Unloading and cleaning up resources...")
+
+        for i = #managedConnections, 1, -1 do
+            local conn = managedConnections[i]
+            pcall(function() conn:Disconnect() end)
+            table.remove(managedConnections, i)
+        end
+
+        for player, _ in pairs(highlights) do
+            pcall(cleanupHighlight, player)
+        end
+
+        highlights = nil
+        settings = nil
+        managedConnections = nil
+        Fluent = nil
+        return
+    end
+
+    for player, data in pairs(highlights) do
+        if data and data.character and data.character.Parent then
+            pcall(updateHighlight, player)
+        else
+            pcall(cleanupHighlight, player)
         end
     end
 end
 
-task.spawn(function()
-    while not Fluent.Unloaded do
-        task.wait()
-        for player in pairs(highlights) do
-            updateHighlight(player)
-        end
-    end
-    for _, connection in ipairs(connections) do
-        connection:Disconnect()
-    end
-    for player, connection in pairs(characterConnections) do
-        connection:Disconnect()
-    end
-    for player, highlight in pairs(highlights) do
-        highlight:Destroy()
-    end
-end)
+table.insert(managedConnections, RunService.Heartbeat:Connect(onHeartbeat))
 
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
