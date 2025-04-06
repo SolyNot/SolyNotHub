@@ -8,5 +8,5 @@ end)
 if success then
     loadstring(scriptContent)()
 else
-    loadstring(game:HttpGet(baseUrl .. "universal.lua"
+    loadstring(game:HttpGet(baseUrl .. "universal.lua"))()
 end
