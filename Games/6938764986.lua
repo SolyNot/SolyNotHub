@@ -179,8 +179,8 @@ local function mainTask()
 end
 
 local Window = Fluent:CreateWindow({
-    Title = "Sol",
-    SubTitle = "by dawid",
+    Title = "Airplane Simulator",
+    SubTitle = "by SolyNot",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
@@ -193,6 +193,10 @@ local Tabs = {
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
+Tabs.Main:AddParagraph({
+    Title = "IMPORTANT",
+    Content = "SELECT CONTRACTS FIRST DUMBASS"
+})
 Tabs.Main:AddToggle("Auto Contracts", {
     Title = "Auto Contracts",
     Default = false, 
