@@ -73,6 +73,7 @@ local function updateCurrentPlaneName()
     end
 end
 
+--pls dont look at it
 local function mainTask()
     local lastTargetParent = nil
     while contractsEnabled do
