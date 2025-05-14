@@ -17,7 +17,7 @@ local settings = {
 }
 
 local Window = Fluent:CreateWindow({
-    Title = "SolyNot ESP",
+    Title = "SolyNot Universal",
     SubTitle = "by SolyNot",
     Size = UDim2.fromOffset(500, 350),
     Theme = "Dark"
