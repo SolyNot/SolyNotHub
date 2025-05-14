@@ -1,7 +1,7 @@
 # SolyNot Hub
 > **Script:**
 > ```lua
-> loadstring(game:HttpGet("https://raw.githubusercontent.com/SolyNot/SolyNotHub/refs/heads/main/loader.lua"))()
+> loadstring(game:HttpGet("https://raw.githubusercontent.com/SolyNot/SolyNotHub/main/loader.lua"))()
 > ```
 
 > **Tip:** Ensure your executor is compatible with the script to avoid issues..
