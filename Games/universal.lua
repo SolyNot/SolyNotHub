@@ -4,175 +4,114 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-
 local localPlayer = Players.LocalPlayer
 local highlights = {}
-local managedConnections = {}
-local currentHue = 0
 
 local settings = {
-    enabled = false,
+    enabled = true,
     teamCheck = true,
     useTeamColor = true,
     rainbowMode = false,
-    rainbowSpeedValue = 0.5,
+    rainbowSpeed = 0.5,
     defaultColor = Color3.fromRGB(255, 0, 0)
 }
 
 local Window = Fluent:CreateWindow({
-    Title = "SolyNot Universal (Detected Version)",
+    Title = "SolyNot ESP",
     SubTitle = "by SolyNot",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
-    Acrylic = true,
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl
+    Size = UDim2.fromOffset(500, 350),
+    Theme = "Dark"
 })
 
-local Tabs = {
-    ESP = Window:AddTab({ Title = "ESP", Icon = "eye" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
-}
+local Tab = Window:AddTab({ Title = "ESP", Icon = "eye" })
 
-Tabs.ESP:AddToggle("ESPEnabled", { Title = "Enable ESP", Default = settings.enabled, Callback = function(value) settings.enabled = value end })
-Tabs.ESP:AddToggle("TeamCheck", { Title = "Team Check", Default = settings.teamCheck, Callback = function(value) settings.teamCheck = value end })
-Tabs.ESP:AddToggle("UseTeamColor", { Title = "Use Team Color", Default = settings.useTeamColor, Callback = function(value) settings.useTeamColor = value end })
-Tabs.ESP:AddToggle("RainbowMode", { Title = "Rainbow Mode", Default = settings.rainbowMode, Callback = function(value) settings.rainbowMode = value end })
-Tabs.ESP:AddSlider("RainbowSpeed", {Title = "Rainbow Speed (Lower = Slower)",Description = "Controls how fast the rainbow color cycles.",Default = settings.rainbowSpeedValue,Min = 0.1,Max = 5.0,Rounding = 1,Callback = function(value) settings.rainbowSpeedValue = value end })
-Tabs.ESP:AddColorpicker("DefaultColor", { Title = "Default Color", Default = settings.defaultColor, Callback = function(value) settings.defaultColor = value end })
+Tab:AddToggle("ESPEnabled", { Title = "Enable ESP", Default = settings.enabled, 
+    Callback = function(value) settings.enabled = value end 
+})
+Tab:AddToggle("TeamCheck", { Title = "Team Check", Default = settings.teamCheck, 
+    Callback = function(value) settings.teamCheck = value end 
+})
+Tab:AddToggle("UseTeamColor", { Title = "Use Team Color", Default = settings.useTeamColor, 
+    Callback = function(value) settings.useTeamColor = value end 
+})
+Tab:AddToggle("RainbowMode", { Title = "Rainbow Mode", Default = settings.rainbowMode, 
+    Callback = function(value) settings.rainbowMode = value end 
+})
+Tab:AddSlider("RainbowSpeed", { 
+    Title = "Rainbow Speed", 
+    Default = settings.rainbowSpeed, 
+    Min = 0.1, 
+    Max = 5.0, 
+    Rounding = 1,
+    Callback = function(value) settings.rainbowSpeed = value end 
+})
+Tab:AddColorpicker("DefaultColor", { 
+    Title = "Default Color", 
+    Default = settings.defaultColor, 
+    Callback = function(value) settings.defaultColor = value end 
+})
 
-Window:SelectTab(1)
+local currentHue = 0
 
-local function cleanupHighlight(player)
-    local data = highlights[player]
-    if data then
-        if data.connections then
-            for _, conn in ipairs(data.connections) do
-                conn:Disconnect()
-            end
-            data.connections = nil
-        end
-        if data.highlight then
-            data.highlight:Destroy()
-            data.highlight = nil
+local function applyESP(player)
+    if player == localPlayer then return end
+    
+    if highlights[player] and highlights[player].character ~= player.Character then
+        if highlights[player].highlight then
+            highlights[player].highlight:Destroy()
         end
         highlights[player] = nil
     end
-end
-
-local function updateHighlight(player)
-    if player == localPlayer then return end
-
-    local character = player.Character
-    local data = highlights[player]
-
-    if not character or not character.Parent then
-        if data then
-            cleanupHighlight(player)
+    
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+        if highlights[player] and highlights[player].highlight then
+            highlights[player].highlight:Destroy()
+            highlights[player] = nil
         end
         return
     end
-
-    if data and data.character ~= character then
-        cleanupHighlight(player)
-        data = nil
+    
+    if not highlights[player] then
+        local highlight = Instance.new("Highlight",player.Character)
+        highlights[player] = {highlight = highlight,character = player.Character}
     end
-
-    if not data then
-        local newHighlight = Instance.new("Highlight",character)
-
-        local characterRemovingConn = character.AncestryChanged:Connect(function(_, parent)
-            if not parent then
-                cleanupHighlight(player)
-            end
-        end)
-
-        local newData = {
-            highlight = newHighlight,
-            character = character,
-            connections = { characterRemovingConn }
-        }
-        highlights[player] = newData
-        data = newData
-    end
-
-    local highlight = data.highlight
-    local isOnTeam = player.Team and player.Team == localPlayer.Team
-    local isVisible = settings.enabled and (not settings.teamCheck or not isOnTeam)
-
-    highlight.Enabled = isVisible
-
-    if isVisible then
+    
+    local highlight = highlights[player].highlight
+    highlight.Enabled = settings.enabled and (not settings.teamCheck or not (player.Team and player.Team == localPlayer.Team))
+    
+    if highlight.Enabled then
         local color = settings.rainbowMode and Color3.fromHSV(currentHue, 1, 1) or (settings.useTeamColor and player.TeamColor and player.TeamColor.Color or settings.defaultColor)
         highlight.OutlineColor = color
         highlight.FillColor = color
     end
 end
 
-local function setupPlayer(player)
-    if player == localPlayer then return end
+for _, player in pairs(Players:GetPlayers()) do
+    applyESP(player)
+end
 
-    local charAddedConn = player.CharacterAdded:Connect(function(character)
-        if player.Character == character then
-             updateHighlight(player)
-        end
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        applyESP(player)
     end)
-    table.insert(managedConnections, charAddedConn)
-
     if player.Character then
-        updateHighlight(player)
-    else
-        cleanupHighlight(player)
+        applyESP(player)
     end
-end
+end)
 
-local function cleanupPlayer(player)
-    if player == localPlayer then return end
-    cleanupHighlight(player)
-end
-
-table.insert(managedConnections, Players.PlayerAdded:Connect(setupPlayer))
-table.insert(managedConnections, Players.PlayerRemoving:Connect(cleanupPlayer))
-
-for _, player in ipairs(Players:GetPlayers()) do
-    pcall(setupPlayer, player)
-end
-
-local function onHeartbeat(dt)
-    if Fluent and Fluent.Unloaded then
-        for i = #managedConnections, 1, -1 do
-            local conn = managedConnections[i]
-            pcall(function() conn:Disconnect() end)
-            table.remove(managedConnections, i)
-        end
-
-        if highlights then
-             for player, _ in pairs(highlights) do
-                 pcall(cleanupHighlight, player)
-             end
-        end
-
-        highlights = nil
-        settings = nil
-        managedConnections = nil
-        return
+Players.PlayerRemoving:Connect(function(player)
+    if highlights[player] and highlights[player].highlight then
+        highlights[player].highlight:Destroy()
     end
+    highlights[player] = nil
+end)
 
-    currentHue = (currentHue + dt * settings.rainbowSpeedValue) % 1
-
-    if highlights then
-        for player, data in pairs(highlights) do
-            if data and data.character and data.character.Parent then
-                 pcall(updateHighlight, player)
-            else
-                 pcall(cleanupHighlight, player)
-            end
-        end
+RunService.Heartbeat:Connect(function(deltaTime)
+    currentHue = (currentHue + deltaTime * settings.rainbowSpeed) % 1
+    for player, _ in pairs(highlights) do
+        applyESP(player)
     end
-end
-
-local heartbeatConnection = RunService.Heartbeat:Connect(onHeartbeat)
-table.insert(managedConnections, heartbeatConnection)
+end)
 
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
