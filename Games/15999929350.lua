@@ -130,6 +130,11 @@ Tabs.Troll:AddButton({
     end
 })
 
+Tabs.Win:AddParagraph({
+    Title = "Important",
+    Content = "if we hit 25 member on discord I will release"
+})
+
 Window:SelectTab(1)
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
