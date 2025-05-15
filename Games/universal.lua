@@ -19,12 +19,14 @@ local settings = {
 local Window = Fluent:CreateWindow({
     Title = "SolyNot Universal",
     SubTitle = "by SolyNot",
+    TabWidth = 160,
     Size = UDim2.fromOffset(500, 350),
+    Acrylic = true,
     Theme = "Dark"
 })
 
 local Tab = Window:AddTab({ Title = "ESP", Icon = "eye" })
-
+local setting = Window:AddTab({ Title = "Settings", Icon = "settings" })
 Tab:AddToggle("ESPEnabled", { Title = "Enable ESP", Default = settings.enabled, 
     Callback = function(value) settings.enabled = value end 
 })
@@ -38,7 +40,7 @@ Tab:AddToggle("RainbowMode", { Title = "Rainbow Mode", Default = settings.rainbo
     Callback = function(value) settings.rainbowMode = value end 
 })
 Tab:AddSlider("RainbowSpeed", { 
-    Title = "Rainbow Speed", 
+    Title = "Rainbow Speed",
     Default = settings.rainbowSpeed, 
     Min = 0.1, 
     Max = 5.0, 
@@ -115,5 +117,5 @@ end)
 
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
+InterfaceManager:BuildInterfaceSection(setting)
+SaveManager:BuildConfigSection(setting)
