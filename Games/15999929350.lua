@@ -11,7 +11,7 @@ for _,v in pairs(players:GetPlayers()) do
 end
 
 local Window = Fluent:CreateWindow({
-    Title = "SolyNot Hub V1 (not optimized because lazy)",
+    Title = "SolyNot Hub V1.1",
     SubTitle = "by SolyNot",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
@@ -22,7 +22,6 @@ local Window = Fluent:CreateWindow({
 
 local Tabs = {
     Troll = Window:AddTab({ Title = "Troll", Icon = "skull" }),
-    Win = Window:AddTab({ Title = "Win", Icon = "crown" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
@@ -46,17 +45,21 @@ Tabs.Troll:AddButton({
 
 local playerdropdown = Tabs.Troll:AddDropdown("Dropdown", {Title = "Players",Values = plr,Multi = false,Default = 1,})
 players.PlayerAdded:Connect(function(player)
-    table.insert(plr, player.Name)
-    playerdropdown:SetValue(player)
+    if not Fluent.Unloaded then
+        table.insert(plr, player.Name)
+        playerdropdown:SetValue(player)
+    end
 end)
 players.PlayerRemoving:Connect(function(player)
-    for i, name in ipairs(plr) do
-        if name == player.Name then
-            table.remove(plr, i)
-            break
+    if not Fluent.Unloaded then
+        for i, name in ipairs(plr) do
+            if name == player.Name then
+                table.remove(plr, i)
+                break
+            end
         end
+        playerdropdown:SetValue(plr[1] or "")
     end
-    playerdropdown:SetValue(plr[1] or "")
 end)
 local X = Tabs.Troll:AddInput("Input", {Title = "X",Default = "1",Placeholder = "1",Numeric = true,Finished = false,})
 local Y = Tabs.Troll:AddInput("Input", {Title = "Y",Default = "1",Placeholder = "1",Numeric = true,Finished = false,})
@@ -128,11 +131,6 @@ Tabs.Troll:AddButton({
             player.Character:WaitForChild("Slap"):WaitForChild("Event"):FireServer(unpack(args))
         end
     end
-})
-
-Tabs.Win:AddParagraph({
-    Title = "Important",
-    Content = "if we hit 25 member on discord I will release"
 })
 
 Window:SelectTab(1)
