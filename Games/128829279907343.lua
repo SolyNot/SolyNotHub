@@ -13,7 +13,7 @@ for _,v in pairs(game:GetService("ReplicatedStorage").SlapTools:GetChildren()) d
 	table.insert(tools,v.Name)
 end
 local Window = Fluent:CreateWindow({
-    Title = "SolyNot Hub V1 (not optimized because lazy)",
+    Title = "SolyNot Hub V1.1",
     SubTitle = "by SolyNot",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
@@ -47,17 +47,21 @@ Tabs.Troll:AddButton({
 
 local playerdropdown = Tabs.Troll:AddDropdown("Dropdown", {Title = "Players",Values = plr,Multi = false,Default = 1,})
 players.PlayerAdded:Connect(function(player)
-    table.insert(plr, player.Name)
-    playerdropdown:SetValue(player)
+    if not Fluent.Unloaded then
+        table.insert(plr, player.Name)
+        playerdropdown:SetValue(player)
+    end
 end)
 players.PlayerRemoving:Connect(function(player)
-    for i, name in ipairs(plr) do
-        if name == player.Name then
-            table.remove(plr, i)
-            break
+    if not Fluent.Unloaded then
+        for i, name in ipairs(plr) do
+            if name == player.Name then
+                table.remove(plr, i)
+                break
+            end
         end
+        playerdropdown:SetValue(plr[1] or "")
     end
-    playerdropdown:SetValue(plr[1] or "")
 end)
 
 local tool = Tabs.Troll:AddDropdown("Dropdown", {Title = "Tools",Values = tools,Multi = false,Default = 1,})
