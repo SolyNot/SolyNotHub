@@ -60,7 +60,7 @@ local Tab = Window:Tab({Title = "Main", Icon = "star"}) do
 
     Tab:Toggle({
         Title = "Auto Farm",
-        Desc = "auto farm money or exp",
+        Desc = "ONLY FARM XP",
         Value = false,
         Callback = function(value)
             if value then
