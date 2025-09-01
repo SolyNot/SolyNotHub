@@ -19,6 +19,10 @@ local connection
 local iswalking
 local speed: number = 0
 
+local function getcurrentcar()
+    return hum.SeatPart.Parent
+end
+
 local Window = Library:Window({
     Title = "[👮] Dispatch: Police Simulator Script",
     Desc = "SolyNot on top",
@@ -80,8 +84,8 @@ local Tab = Window:Tab({Title = "Main", Icon = "star"}) do
 end
 
 Window:Line()
-local Visual = Window:Tab({Title = "Visual", Icon = "eye"}) do
-    Visual:Slider({
+local plrtab = Window:Tab({Title = "Players", Icon = "eye"}) do
+    plrtab:Slider({
         Title = "Set Speed",
         Min = 0, 
         Max = 100,
@@ -92,7 +96,7 @@ local Visual = Window:Tab({Title = "Visual", Icon = "eye"}) do
         end   
     })
 
-    Visual:Toggle({
+    plrtab:Toggle({
         Title = "Toggle WalkSpeed",
         Desc = "change walkspeed",
         Callback = function(value)
@@ -107,6 +111,33 @@ local Visual = Window:Tab({Title = "Visual", Icon = "eye"}) do
             else
                 iswalking = false
             end
+        end
+    })
+
+    plrtab:Button({
+        Title = "Super car",
+        Desc = "Make Your Car Faster (Way More Faster)",
+        Callback = function()
+            local setting = getcurrentcar()["A-Chassis Tune"]
+            setting.PeakTorque = 1000
+            setting.PeakTorqueRPM = 7000
+            setting.Redline = 12000
+            setting.ShiftRPM = 11500
+            setting.RevAccel = 500
+            setting.Flywheel = 300
+            setting.Turbochargers = 1
+            setting.T_Boost = 50
+            setting.T_SpoolIncrease = 0.2
+            setting.T_SpoolDecrease = 0.05
+            setting.FinalDrive = 2.8
+            setting.Ratios = {3.0, 0, 2.5, 1.9, 1.4, 1.1, 0.9, 0.7}
+            setting.FDiffPower = 50
+            setting.RDiffPower = 50
+            setting.BrakeForce = 999999
+            setting.BrakeBias = 0.5
+            setting.ABSEnabled = false
+            setting.EBrakeForce = 999999
+            setting.PBrakeForce = 999999            
         end
     })
 end
