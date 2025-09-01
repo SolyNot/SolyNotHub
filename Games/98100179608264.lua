@@ -19,10 +19,6 @@ local connection
 local iswalking
 local speed: number = 0
 
-local function getcurrentcar()
-    return hum.SeatPart.Parent
-end
-
 local Window = Library:Window({
     Title = "[👮] Dispatch: Police Simulator Script",
     Desc = "SolyNot on top",
@@ -86,7 +82,7 @@ end
 Window:Line()
 local plrtab = Window:Tab({Title = "Players", Icon = "eye"}) do
     plrtab:Slider({
-        Title = "Set WalkSpeed",
+        Title = "Set Speed",
         Min = 0, 
         Max = 100,
         Bounding = 0,
@@ -118,7 +114,7 @@ local plrtab = Window:Tab({Title = "Players", Icon = "eye"}) do
         Title = "Super car",
         Desc = "Make Your Car Faster (Way More Faster)",
         Callback = function()
-            local setting = getcurrentcar()["A-Chassis Tune"]
+            local setting = require(hum.SeatPart.Parent["A-Chassis Tune"])
             setting.PeakTorque = 1000
             setting.PeakTorqueRPM = 7000
             setting.Redline = 12000
