@@ -86,7 +86,7 @@ end
 Window:Line()
 local plrtab = Window:Tab({Title = "Players", Icon = "eye"}) do
     plrtab:Slider({
-        Title = "Set Speed",
+        Title = "Set WalkSpeed",
         Min = 0, 
         Max = 100,
         Bounding = 0,
