@@ -186,4 +186,27 @@ local plrtab = Window:Tab({Title = "Players", Icon = "eye"}) do
             end
         end
     })
+
+    plrtab:Button({
+        Title = "Super car",
+        Desc = "Make Your Car Faster (Way More Faster)",
+        Callback = function()
+            local setting = require(hum.SeatPart.Parent["A-Chassis Tune"])
+            rawset(setting, "PeakTorque", 1000)
+            rawset(setting, "PeakTorqueRPM", 7000)
+            rawset(setting, "Redline", 12000)
+            rawset(setting, "ShiftRPM", 11500)
+            rawset(setting, "RevAccel", 500)
+            rawset(setting, "Flywheel", 300)
+            rawset(setting, "Turbochargers", 1)
+            rawset(setting, "T_Boost", 50)
+            rawset(setting, "T_SpoolIncrease", 0.2)
+            rawset(setting, "T_SpoolDecrease", 0.05)
+            rawset(setting, "FinalDrive", 2.8)
+            rawset(setting, "FDiffPower", 50)
+            rawset(setting, "RDiffPower", 50)
+            rawset(setting, "BrakeForce", 999999)
+            rawset(setting, "BrakeBias", 0.5)
+        end
+    })
 end
