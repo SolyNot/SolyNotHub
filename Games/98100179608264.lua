@@ -25,8 +25,7 @@ local AutoFarmV2 = {
     illegalSet = nil,
     thread = nil,
 }
-game:GetService("StarterPlayer").StarterPlayerScripts.DistanceCheck:Destroy()
-game:GetService("Players").LocalPlayer.PlayerScripts.DistanceCheck:Destroy()
+pcall(function() game:GetService("StarterPlayer").StarterPlayerScripts.DistanceCheck:Destroy(); lplr.PlayerScripts.DistanceCheck:Destroy() end)
 local part = Instance.new("Part")
 part.CFrame = CFrame.new(0,5,0)
 part.Size = vector.create(10000,1,10000)
@@ -51,6 +50,7 @@ local function processNpcs()
     local npcs = {}
     for _, entity in ipairs(Workspace:GetDescendants()) do
         if entity:IsA("Model") and entity:GetAttribute("PedIndex") then
+            if entity.Parent == workspace.Peds then continue end
             table.insert(npcs, entity)
         end
     end
@@ -64,7 +64,7 @@ local function processNpcs()
             local playerRoot = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
 
             if npcRoot and playerRoot then
-                local tween = TweenService:Create(playerRoot, TweenInfo.new(.5),{CFrame = npcRoot.CFrame * CFrame.new(0,-6,0)})
+                local tween = TweenService:Create(playerRoot, TweenInfo.new(.25),{CFrame = npcRoot.CFrame * CFrame.new(0,-6,0)})
                 tween:Play()
                 tween.Completed:Wait()
                 local ok, pedData = pcall(InteractPedestrian.InvokeServer, InteractPedestrian, pedIndex)
