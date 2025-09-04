@@ -25,7 +25,8 @@ local AutoFarmV2 = {
     illegalSet = nil,
     thread = nil,
 }
-
+game:GetService("StarterPlayer").StarterPlayerScripts.DistanceCheck:Destroy()
+game:GetService("Players").LocalPlayer.PlayerScripts.DistanceCheck:Destroy()
 local part = Instance.new("Part")
 part.CFrame = CFrame.new(0,5,0)
 part.Size = vector.create(10000,1,10000)
