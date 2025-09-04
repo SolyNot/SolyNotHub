@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
+local TweenService = game:GetService("TweenService")
 
 local lplr = Players.LocalPlayer
 local char = lplr.Character or lplr.CharacterAdded:Wait()
@@ -24,6 +25,13 @@ local AutoFarmV2 = {
     illegalSet = nil,
     thread = nil,
 }
+
+local part = Instance.new("Part")
+part.CFrame = CFrame.new(0,5,0)
+part.Size = vector.create(10000,1,10000)
+part.Transparency = 1
+part.Anchored = true
+part.Parent = workspace
 
 local function buildIllegalSet()
     local set = {}
@@ -55,9 +63,9 @@ local function processNpcs()
             local playerRoot = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
 
             if npcRoot and playerRoot then
-                playerRoot.CFrame = npcRoot.CFrame * CFrame.new(0, 0, 0)
-                task.wait()
-
+                local tween = TweenService:Create(playerRoot, TweenInfo.new(.5),{CFrame = npcRoot.CFrame * CFrame.new(0,-6,0)})
+                tween:Play()
+                tween.Completed:Wait()
                 local ok, pedData = pcall(InteractPedestrian.InvokeServer, InteractPedestrian, pedIndex)
                 if ok and type(pedData) == "table" then
                     if pedData.IsArrested then
