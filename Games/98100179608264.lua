@@ -64,9 +64,11 @@ local function processNpcs()
             local playerRoot = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
 
             if npcRoot and playerRoot then
-                local tween = TweenService:Create(playerRoot, TweenInfo.new(0.25), {CFrame = npcRoot.CFrame * CFrame.new(0, -6, 0)})
+                playerRoot.CFrame = npcRoot.CFrame * CFrame.new(0,-6,0)
+                --[[local tween = TweenService:Create(playerRoot, TweenInfo.new(0.1), {CFrame = npcRoot.CFrame * CFrame.new(0, -6, 0)})
                 tween:Play()
-                tween.Completed:Wait()
+                tween.Completed:Wait()]]
+                task.wait()
 
                 local ok, pedData
                 while AutoFarmV2.enabled do
@@ -78,6 +80,7 @@ local function processNpcs()
                 end
 
                 if ok and type(pedData) == "table" then
+                    --print(pedData)
                     if pedData.IsArrested then
                         AutoFarmV2.cache[pedIndex] = true
                     else
