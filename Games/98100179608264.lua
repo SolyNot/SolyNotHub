@@ -64,7 +64,7 @@ local function processNpcs()
             local playerRoot = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
 
             if npcRoot and playerRoot then
-                local tween = TweenService:Create(playerRoot, TweenInfo.new(.25),{CFrame = npcRoot.CFrame * CFrame.new(0,-6,0)})
+                local tween = TweenService:Create(playerRoot, TweenInfo.new(.5),{CFrame = npcRoot.CFrame * CFrame.new(0,-6,0)})
                 tween:Play()
                 tween.Completed:Wait()
                 local ok, pedData = pcall(InteractPedestrian.InvokeServer, InteractPedestrian, pedIndex)
