@@ -78,7 +78,6 @@ local function processNpcs()
                 end
 
                 if ok and type(pedData) == "table" then
-                    print(pedData)
                     if pedData.IsArrested then
                         AutoFarmV2.cache[pedIndex] = true
                     else
